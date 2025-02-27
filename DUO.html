@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RULETA DE LA CLASE</title>
+  <style>
+    /* 📌 Estilos generales */
+    body {
+      background: linear-gradient(135deg, #ff758c, #ff7eb3, #fad0c4);
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+    .duo-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #1b1602;
+      color: rgb(255, 196, 0);
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      z-index: 3;
+    }
+
+    .duo-button:hover {
+      background-color: #1f1201;
+      transform: scale(1.15);
+    }
+
+    .duo-button::before {
+      content: '➜'; /* Flecha más grande apuntando a la derecha */
+      font-size: 24px;
+      margin-right: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .duo-button {
+        top: 5px;
+        right: 5px;
+        padding: 12px 25px;
+        font-size: 18px;
+      }
+      .duo-button::before {
+        font-size: 22px;
+        margin-right: 10px;
+      }
+    }
+    /* 📌 Contenedor general */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 1200px;
+      padding: 20px;
+      position: relative;
+    }
+
+    /* 📌 Lista de nombres */
+    .name-list {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      max-height: 300px;
+      overflow-y: auto;
+      width: 100%;
+      max-width: 300px;
+      text-align: left;
+      margin-bottom: 20px;
+      border: 2px solid black;
+      position: relative;
+    }
+
+    .name-list h3 {
+      margin-top: 0;
+    }
+
+    .name-list ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .name-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .name-list button {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .name-list input {
+      width: calc(100% - 80px);
+      padding: 5px;
+      margin-right: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .name-list .add-button {
+      width: 70px;
+      background-color: #28a745;
+    }
+
+    /* 📌 Botón de toggle para la lista (solo en responsive) */
+    .toggle-list-button {
+      display: none; /* Oculto por defecto */
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      background-color: #130e01;
+      color: rgb(255, 196, 0);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      border: 2px solid black;
+    }
+
+    /* 📌 Ruletas */
+    .wheels-container {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 65%;
+      max-width: 650px;
+    }
+
+    .wheelCanvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* 📌 Flecha */
+    .arrow {
+      position: absolute;
+      top: 50%;
+      right: -25px;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 20px solid transparent;
+      border-bottom: 20px solid transparent;
+      border-right: 25px solid white;
+      z-index: 10;
+    }
+
+    /* 📌 Botón de girar */
+    #spinButton {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      background-color: #130e01;
+      color: rgb(255, 196, 0);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 200px;
+      animation: none;
+      border: 2px solid black;
+    }
+
+    #spinButton:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Animación al hacer clic */
+    @keyframes buttonClick {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* 📌 Partículas */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* 📌 Marca de agua */
+    .watermark {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: rgb(63, 49, 2);
+      z-index: 1000;
+      pointer-events: none;
+    }
+    /* 📌 Ganador */
+    .winner-display {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+      font-weight: bold;
+      color: white;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+      display: none;
+      z-index: 1000;
+    }
+
+    /* 📌 Estilos responsive */
+    @media (max-width: 767px) {
+      .toggle-list-button {
+        display: block; /* Mostrar el botón en responsive */
+      }
+
+      .name-list {
+        display: none; /* Ocultar la lista por defecto en responsive */
+        max-height: 200px; /* Altura máxima para la lista en móviles */
+      }
+
+      .name-list.visible {
+        display: block; /* Mostrar la lista cuando tenga la clase "visible" */
+      }
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        flex-direction: row;
+        gap: 20px;
+      }
+
+      .name-list {
+        margin-bottom: 0;
+        max-height: 500px;
+        right: 25px;
+      }
+
+      .wheels-container {
+        max-width: 800px;
+      }
+
+      #spinButton {
+        margin-top: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="watermark">JESUS HERRERO</div>
+  <canvas class="particles"></canvas>
+  <a href="RULETA1SMR.html" class="duo-button">NORMAL WHEEL</a>
+
+  <div class="container">
+    <!-- Botón de toggle para la lista (solo en responsive) -->
+    <button class="toggle-list-button" onclick="toggleList()">Mostrar Lista</button>
+
+    <!-- Lista de nombres -->
+    <div class="name-list">
+      <h3>Lista de Nombres</h3>
+      <ul id="nameList"></ul>
+      <div>
+        <input type="text" id="newName" placeholder="Añadir nombre" aria-label="Añadir nombre" />
+        <button class="add-button" onclick="addName()">Agregar</button>
+      </div>
+    </div>
+
+    <!-- Ruletas -->
+    <div class="wheels-container">
+      <div class="wheel-container">
+        <div class="arrow"></div>
+        <canvas id="wheelCanvas1" class="wheelCanvas" width="400" height="400"></canvas>
+      </div>
+      <div class="wheel-container">
+        <div class="arrow"></div>
+        <canvas id="wheelCanvas2" class="wheelCanvas" width="400" height="400"></canvas>
+      </div>
+    </div>
+
+    <!-- Botón de girar -->
+    <button id="spinButton" onclick="spinWheels()">Girar</button>
+  </div>
+
+  <!-- Ganador -->
+  <div class="winner-display" id="winnerDisplay"></div>
+
+  <!-- Sonidos -->
+  <audio id="winSound" src="https://www.soundjay.com/human/sounds/applause-01.mp3"></audio>
+  <audio id="spinSound" src="https://www.soundjay.com/misc/sounds/cartoon-jump-1.mp3"></audio>
+
+  <!-- Script para confeti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+  <script>
+    const canvas1 = document.getElementById("wheelCanvas1");
+    const ctx1 = canvas1.getContext("2d");
+    const canvas2 = document.getElementById("wheelCanvas2");
+    const ctx2 = canvas2.getContext("2d");
+    const nameListElement = document.getElementById("nameList");
+    const winSound = document.getElementById("winSound");
+    const spinSound = document.getElementById("spinSound");
+    const winnerDisplay = document.getElementById("winnerDisplay");
+    const spinButton = document.getElementById("spinButton");
+    const nameList = document.querySelector(".name-list");
+    const toggleListButton = document.querySelector(".toggle-list-button");
+
+    winSound.volume = 0.3;
+    spinSound.volume = 0.5;
+
+    let names = [
+      "DiegoDeMiguel", "Gerardo", "Sergio.B", "Sergio.A", "Adrian",
+      "Mario", "Estefania", "Albert", "Guillermo", "Diego.A",
+      "Alejandro", "Fernando", "Bryan", "CarlosRodrigo", "Geraldine",
+      "Teresa", "Javier", "Jesus"
+    ];
+
+    const colors = [
+      "#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#33FFF5",
+      "#F5FF33", "#A133FF", "#FF3333", "#33FFA1", "#5733FF"
+    ];
+
+    // Función para mostrar/ocultar la lista en responsive
+    function toggleList() {
+      nameList.classList.toggle("visible");
+      toggleListButton.textContent = nameList.classList.contains("visible") ? "Ocultar Lista" : "Mostrar Lista";
+    }
+
+    function updateNameList() {
+      nameListElement.innerHTML = "";
+      names.forEach((name, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>${name}</strong>
+          <button onclick="removeName(${index})" aria-label="Eliminar ${name}">X</button>
+        `;
+        nameListElement.appendChild(li);
+      });
+    }
+
+    function removeName(index) {
+      names.splice(index, 1);
+      updateNameList();
+      drawWheels();
+    }
+
+    function addName() {
+      const input = document.getElementById("newName");
+      const newName = input.value.trim();
+
+      if (newName !== "") {
+        names.push(newName);
+        input.value = "";
+        updateNameList();
+        drawWheels();
+      }
+    }
+
+    function drawWheels(angle1 = 0, angle2 = 0) {
+      const container1 = document.querySelector('.wheel-container');
+      canvas1.width = container1.clientWidth;
+      canvas1.height = container1.clientWidth;
+
+      const container2 = document.querySelector('.wheel-container');
+      canvas2.width = container2.clientWidth;
+      canvas2.height = container2.clientWidth;
+
+      drawWheel(ctx1, canvas1, angle1);
+      drawWheel(ctx2, canvas2, angle2);
+    }
+
+    function drawWheel(ctx, canvas, angle = 0) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let numSegments = names.length;
+
+      if (numSegments === 0) return;
+
+      let arcSize = (2 * Math.PI) / numSegments;
+
+      for (let i = 0; i < numSegments; i++) {
+        ctx.beginPath();
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.moveTo(canvas.width / 2, canvas.height / 2);
+        ctx.arc(
+          canvas.width / 2, canvas.height / 2,
+          canvas.width / 2,
+          i * arcSize + angle, (i + 1) * arcSize + angle
+        );
+        ctx.lineTo(canvas.width / 2, canvas.height / 2);
+        ctx.fill();
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(i * arcSize + arcSize / 2 + angle);
+        ctx.textAlign = "center";
+        ctx.fillStyle = "black";
+        ctx.font = `bold ${canvas.width / 23}px Arial`;
+        ctx.fillText(names[i], canvas.width / 3, 10);
+        ctx.restore();
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      drawWheels();
+    });
+
+    function getRandomColor() {
+      const letters = "0123456789ABCDEF";
+      let color = "#";
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    let colorInterval;
+
+    function spinWheels() {
+      spinButton.disabled = true;
+      spinButton.style.opacity = "0.5";
+      spinButton.style.cursor = "not-allowed";
+
+      // Animación de clic
+      spinButton.style.animation = "buttonClick 0.3s ease";
+
+      // Cambiar color del botón mientras gira
+      colorInterval = setInterval(() => {
+        spinButton.style.backgroundColor = getRandomColor();
+      }, 200); // Cambia de color cada 200ms
+
+      spinSound.play();
+
+      let extraRotations1 = Math.floor(Math.random() * 6) + 5;
+      let totalRotation1 = extraRotations1 * 360 + Math.floor(Math.random() * 360);
+      let currentRotation1 = 0;
+      let spinSpeed1 = Math.random() * (25 - 15) + 15;
+
+      let extraRotations2 = Math.floor(Math.random() * 6) + 5;
+      let totalRotation2 = extraRotations2 * 360 + Math.floor(Math.random() * 360);
+      let currentRotation2 = 0;
+      let spinSpeed2 = Math.random() * (25 - 15) + 15;
+
+      function animateSpin() {
+        if (spinSpeed1 > 0.2 || spinSpeed2 > 0.2) {
+          if (spinSpeed1 > 0.2) {
+            currentRotation1 += spinSpeed1;
+            spinSpeed1 *= Math.random() * (0.98 - 0.95) + 0.95;
+          }
+          if (spinSpeed2 > 0.2) {
+            currentRotation2 += spinSpeed2;
+            spinSpeed2 *= Math.random() * (0.98 - 0.95) + 0.95;
+          }
+          drawWheels((currentRotation1 * Math.PI) / 180, (currentRotation2 * Math.PI) / 180);
+          requestAnimationFrame(animateSpin);
+        } else {
+          determineWinners(currentRotation1 % 360, currentRotation2 % 360);
+        }
+      }
+
+      animateSpin();
+    }
+
+    function determineWinners(rotation1, rotation2) {
+      clearInterval(colorInterval); // Detener el cambio de color
+      spinButton.style.backgroundColor = "#28a745"; // Restaurar color original
+
+      let numSegments = names.length;
+      let arcSize = (2 * Math.PI) / numSegments;
+      let adjustedAngle1 = (rotation1 + 0) % 360;
+      let finalAngle1 = (adjustedAngle1 * Math.PI) / 180;
+      let winningIndex1 = Math.floor((numSegments - (finalAngle1 / (2 * Math.PI) * numSegments)) % numSegments);
+      let winner1 = names[winningIndex1];
+
+      let adjustedAngle2 = (rotation2 + 0) % 360;
+      let finalAngle2 = (adjustedAngle2 * Math.PI) / 180;
+      let winningIndex2 = Math.floor((numSegments - (finalAngle2 / (2 * Math.PI) * numSegments)) % numSegments);
+      let winner2 = names[winningIndex2];
+
+      winnerDisplay.textContent = `¡Ganadores: ${winner1} y ${winner2}!`;
+      winnerDisplay.style.display = "block";
+
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+
+      winSound.play();
+
+      setTimeout(() => {
+        winnerDisplay.style.display = "none";
+        spinButton.disabled = false;
+        spinButton.style.opacity = "1";
+        spinButton.style.cursor = "pointer";
+        winSound.pause();
+        winSound.currentTime = 0;
+      }, 4000);
+    }
+
+    function createParticles() {
+      const particlesCanvas = document.querySelector(".particles");
+      const ctx = particlesCanvas.getContext("2d");
+
+      function resizeCanvas() {
+        particlesCanvas.width = window.innerWidth;
+        particlesCanvas.height = window.innerHeight;
+      }
+
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas);
+
+      let particles = Array.from({ length: 100 }, () => ({
+        x: Math.random() * particlesCanvas.width,
+        y: Math.random() * particlesCanvas.height,
+        size: Math.random() * 3 + 1,
+        speedY: Math.random() * 1.5 + 0.5
+      }));
+
+      function animateParticles() {
+        ctx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+        particles.forEach(p => {
+          p.y += p.speedY;
+          if (p.y > particlesCanvas.height) p.y = 0;
+          ctx.fillStyle = "white";
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        requestAnimationFrame(animateParticles);
+      }
+      animateParticles();
+    }
+
+    updateNameList();
+    drawWheels();
+    createParticles();
+</script>
+</body>
+</html>
