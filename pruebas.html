@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RULETA DE LA CLASE</title>
+  <title>AZAR DUO</title>
   <style>
     /* 📌 Estilos generales */
     body {
@@ -33,7 +33,7 @@
       font-size: 20px;
       box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
       transition: background-color 0.3s ease, transform 0.2s ease;
-      z-index: 10;
+      z-index: 3;
     }
 
     .duo-button:hover {
@@ -83,7 +83,8 @@
       max-width: 300px;
       text-align: left;
       margin-bottom: 20px;
-      border: 2px solid black; /* Borde negro añadido */
+      border: 2px solid black;
+      position: relative;
     }
 
     .name-list h3 {
@@ -124,15 +125,39 @@
       background-color: #28a745;
     }
 
-    /* 📌 Ruleta */
-    .wheel-container {
-      position: relative;
-      width: 100%;
-      max-width: 400px;
-      margin: 0 auto;
+    /* 📌 Botón de toggle para la lista (solo en responsive) */
+    .toggle-list-button {
+      display: none; /* Oculto por defecto */
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      background-color: #130e01;
+      color: rgb(255, 196, 0);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      border: 2px solid black;
     }
 
-    #wheelCanvas {
+    /* 📌 Ruletas */
+    .wheels-container {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 65%;
+      max-width: 650px;
+    }
+
+    .wheelCanvas {
       display: block;
       width: 100%;
       height: auto;
@@ -142,17 +167,18 @@
     .arrow {
       position: absolute;
       top: 50%;
-      right: -20px;
+      right: -25px;
       transform: translateY(-50%);
       width: 0;
       height: 0;
-      border-top: 15px solid transparent;
-      border-bottom: 15px solid transparent;
-      border-right: 20px solid white;
+      border-top: 20px solid transparent;
+      border-bottom: 20px solid transparent;
+      border-right: 25px solid white;
       z-index: 10;
     }
 
     /* 📌 Botón de girar */
+        /* 📌 Botón de girar */
     #spinButton {
   padding: 15px 30px;
   font-size: 1.2rem;
@@ -199,6 +225,7 @@
   }
 }
 
+
     /* Animación al hacer clic */
     @keyframes buttonClick {
       0% { transform: scale(1); }
@@ -218,8 +245,7 @@
     }
 
     /* 📌 Marca de agua */
-     /* 📌 Marca de agua */
-     .watermark {
+    .watermark {
       position: fixed;
       bottom: 10px;
       right: 10px;
@@ -229,7 +255,6 @@
       z-index: 1000;
       pointer-events: none;
     }
-
     /* 📌 Ganador */
     .winner-display {
       position: fixed;
@@ -246,6 +271,22 @@
       z-index: 1000;
     }
 
+    /* 📌 Estilos responsive */
+    @media (max-width: 767px) {
+      .toggle-list-button {
+        display: block; /* Mostrar el botón en responsive */
+      }
+
+      .name-list {
+        display: none; /* Ocultar la lista por defecto en responsive */
+        max-height: 200px; /* Altura máxima para la lista en móviles */
+      }
+
+      .name-list.visible {
+        display: block; /* Mostrar la lista cuando tenga la clase "visible" */
+      }
+    }
+
     @media (min-width: 768px) {
       .container {
         flex-direction: row;
@@ -254,15 +295,16 @@
 
       .name-list {
         margin-bottom: 0;
-        max-height: 500px; /* Lista más larga en escritorio */
+        max-height: 500px;
+        right: 25px;
       }
 
-      .wheel-container {
-        max-width: 500px;
+      .wheels-container {
+        max-width: 800px;
       }
 
       #spinButton {
-        margin-top: 0;
+        margin-top: 20px;
       }
     }
   </style>
@@ -270,9 +312,12 @@
 <body>
   <div class="watermark">JESUS HERRERO</div>
   <canvas class="particles"></canvas>
-  <a href="https://kiubi27.github.io/" class="duo-button">DUO WHEEL</a>
+  <a href="pruebas.html" class="duo-button">NORMAL WHEEL</a>
 
   <div class="container">
+    <!-- Botón de toggle para la lista (solo en responsive) -->
+    <button class="toggle-list-button" onclick="toggleList()">Mostrar Lista</button>
+
     <!-- Lista de nombres -->
     <div class="name-list">
       <h3>Lista de Nombres</h3>
@@ -283,14 +328,20 @@
       </div>
     </div>
 
-    <!-- Ruleta -->
-    <div class="wheel-container">
-      <div class="arrow"></div>
-      <canvas id="wheelCanvas" width="400" height="400"></canvas>
+    <!-- Ruletas -->
+    <div class="wheels-container">
+      <div class="wheel-container">
+        <div class="arrow"></div>
+        <canvas id="wheelCanvas1" class="wheelCanvas" width="400" height="400"></canvas>
+      </div>
+      <div class="wheel-container">
+        <div class="arrow"></div>
+        <canvas id="wheelCanvas2" class="wheelCanvas" width="400" height="400"></canvas>
+      </div>
     </div>
 
     <!-- Botón de girar -->
-    <button id="spinButton" onclick="spinWheel()">Girar</button>
+    <button id="spinButton" onclick="spinWheels()">Girar</button>
   </div>
 
   <!-- Ganador -->
@@ -304,13 +355,17 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
   <script>
-    const canvas = document.getElementById("wheelCanvas");
-    const ctx = canvas.getContext("2d");
+    const canvas1 = document.getElementById("wheelCanvas1");
+    const ctx1 = canvas1.getContext("2d");
+    const canvas2 = document.getElementById("wheelCanvas2");
+    const ctx2 = canvas2.getContext("2d");
     const nameListElement = document.getElementById("nameList");
     const winSound = document.getElementById("winSound");
     const spinSound = document.getElementById("spinSound");
     const winnerDisplay = document.getElementById("winnerDisplay");
     const spinButton = document.getElementById("spinButton");
+    const nameList = document.querySelector(".name-list");
+    const toggleListButton = document.querySelector(".toggle-list-button");
 
     winSound.volume = 0.3;
     spinSound.volume = 0.5;
@@ -327,6 +382,12 @@
       "#F5FF33", "#A133FF", "#FF3333", "#33FFA1", "#5733FF"
     ];
 
+    // Función para mostrar/ocultar la lista en responsive
+    function toggleList() {
+      nameList.classList.toggle("visible");
+      toggleListButton.textContent = nameList.classList.contains("visible") ? "Ocultar Lista" : "Mostrar Lista";
+    }
+
     function updateNameList() {
       nameListElement.innerHTML = "";
       names.forEach((name, index) => {
@@ -342,7 +403,7 @@
     function removeName(index) {
       names.splice(index, 1);
       updateNameList();
-      drawWheel();
+      drawWheels();
     }
 
     function addName() {
@@ -353,15 +414,24 @@
         names.push(newName);
         input.value = "";
         updateNameList();
-        drawWheel();
+        drawWheels();
       }
     }
 
-    function drawWheel(angle = 0) {
-      const container = document.querySelector('.wheel-container');
-      canvas.width = container.clientWidth;
-      canvas.height = container.clientWidth;
+    function drawWheels(angle1 = 0, angle2 = 0) {
+      const container1 = document.querySelector('.wheel-container');
+      canvas1.width = container1.clientWidth;
+      canvas1.height = container1.clientWidth;
 
+      const container2 = document.querySelector('.wheel-container');
+      canvas2.width = container2.clientWidth;
+      canvas2.height = container2.clientWidth;
+
+      drawWheel(ctx1, canvas1, angle1);
+      drawWheel(ctx2, canvas2, angle2);
+    }
+
+    function drawWheel(ctx, canvas, angle = 0) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       let numSegments = names.length;
 
@@ -396,7 +466,7 @@
     }
 
     window.addEventListener('resize', () => {
-      drawWheel();
+      drawWheels();
     });
 
     function getRandomColor() {
@@ -410,7 +480,7 @@
 
     let colorInterval;
 
-    function spinWheel() {
+    function spinWheels() {
       spinButton.disabled = true;
       spinButton.style.opacity = "0.5";
       spinButton.style.cursor = "not-allowed";
@@ -425,37 +495,53 @@
 
       spinSound.play();
 
-      let extraRotations = Math.floor(Math.random() * 6) + 5;
-      let totalRotation = extraRotations * 360 + Math.floor(Math.random() * 360);
-      let currentRotation = 0;
-      let spinSpeed = Math.random() * (25 - 15) + 15;
+      let extraRotations1 = Math.floor(Math.random() * 6) + 5;
+      let totalRotation1 = extraRotations1 * 360 + Math.floor(Math.random() * 360);
+      let currentRotation1 = 0;
+      let spinSpeed1 = Math.random() * (25 - 15) + 15;
+
+      let extraRotations2 = Math.floor(Math.random() * 6) + 5;
+      let totalRotation2 = extraRotations2 * 360 + Math.floor(Math.random() * 360);
+      let currentRotation2 = 0;
+      let spinSpeed2 = Math.random() * (25 - 15) + 15;
 
       function animateSpin() {
-        if (spinSpeed > 0.2) {
-          currentRotation += spinSpeed;
-          spinSpeed *= Math.random() * (0.98 - 0.95) + 0.95;
-          drawWheel((currentRotation * Math.PI) / 180);
+        if (spinSpeed1 > 0.2 || spinSpeed2 > 0.2) {
+          if (spinSpeed1 > 0.2) {
+            currentRotation1 += spinSpeed1;
+            spinSpeed1 *= Math.random() * (0.98 - 0.95) + 0.95;
+          }
+          if (spinSpeed2 > 0.2) {
+            currentRotation2 += spinSpeed2;
+            spinSpeed2 *= Math.random() * (0.98 - 0.95) + 0.95;
+          }
+          drawWheels((currentRotation1 * Math.PI) / 180, (currentRotation2 * Math.PI) / 180);
           requestAnimationFrame(animateSpin);
         } else {
-          determineWinner(currentRotation % 360);
+          determineWinners(currentRotation1 % 360, currentRotation2 % 360);
         }
       }
 
       animateSpin();
     }
 
-    function determineWinner(rotation) {
+    function determineWinners(rotation1, rotation2) {
       clearInterval(colorInterval); // Detener el cambio de color
       spinButton.style.backgroundColor = "#130e01"; // Restaurar color original
 
       let numSegments = names.length;
       let arcSize = (2 * Math.PI) / numSegments;
-      let adjustedAngle = (rotation + 0) % 360;
-      let finalAngle = (adjustedAngle * Math.PI) / 180;
-      let winningIndex = Math.floor((numSegments - (finalAngle / (2 * Math.PI) * numSegments)) % numSegments);
-      let winner = names[winningIndex];
+      let adjustedAngle1 = (rotation1 + 0) % 360;
+      let finalAngle1 = (adjustedAngle1 * Math.PI) / 180;
+      let winningIndex1 = Math.floor((numSegments - (finalAngle1 / (2 * Math.PI) * numSegments)) % numSegments);
+      let winner1 = names[winningIndex1];
 
-      winnerDisplay.textContent = `¡Ganador: ${winner}!`;
+      let adjustedAngle2 = (rotation2 + 0) % 360;
+      let finalAngle2 = (adjustedAngle2 * Math.PI) / 180;
+      let winningIndex2 = Math.floor((numSegments - (finalAngle2 / (2 * Math.PI) * numSegments)) % numSegments);
+      let winner2 = names[winningIndex2];
+
+      winnerDisplay.textContent = `¡Ganadores: ${winner1} y ${winner2}!`;
       winnerDisplay.style.display = "block";
 
       confetti({
@@ -511,8 +597,8 @@
     }
 
     updateNameList();
-    drawWheel();
+    drawWheels();
     createParticles();
-  </script>
+</script>
 </body>
 </html>
