@@ -178,27 +178,53 @@
     }
 
     /* 📌 Botón de girar */
+        /* 📌 Botón de girar */
     #spinButton {
-      padding: 15px 30px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      background-color: #130e01;
-      color: rgb(255, 196, 0);
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s ease;
-      margin-top: 20px;
-      width: 100%;
-      max-width: 200px;
-      animation: none;
-      border: 2px solid black;
-    }
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: #130e01;
+  color: rgb(255, 196, 0);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 200px;
+  animation: none;
+  border: 2px solid black;
+  position: relative;
+  box-shadow: 
+    0 4px 0 #0a0800, /* Sombra inferior para efecto 3D */
+    0 6px 6px rgba(0, 0, 0, 0.3); /* Sombra difuminada */
+}
 
-    #spinButton:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+#spinButton:active {
+  top: 2px; /* Mueve el botón hacia abajo al hacer clic */
+  box-shadow: 
+    0 2px 0 #0a0800, /* Reduce la sombra inferior al hacer clic */
+    0 4px 4px rgba(0, 0, 0, 0.3); /* Ajusta la sombra difuminada */
+}
+
+#spinButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  top: 0; /* Restablece la posición si está deshabilitado */
+  box-shadow: 
+    0 4px 0 #0a0800, /* Mantén la sombra 3D */
+    0 6px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos responsive para el botón */
+@media (max-width: 767px) {
+  #spinButton {
+    padding: 12px 25px; /* Reducir el padding en móviles */
+    font-size: 1rem; /* Reducir el tamaño de la fuente en móviles */
+    max-width: 150px; /* Reducir el ancho máximo en móviles */
+  }
+}
+
 
     /* Animación al hacer clic */
     @keyframes buttonClick {
