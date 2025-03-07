@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AZARGAMES</title>
+  <!-- Fuentes de Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Press Start 2P', cursive;
+      background: radial-gradient(circle at center, #003366, #000000);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    .menu {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      max-width: 90%;
+      transition: all 0.3s ease;
+    }
+
+    .menu h1 {
+      color: #fff;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .menu a {
+      text-decoration: none;
+      margin: 0 15px;
+      display: inline-block;
+      transition: transform 0.3s;
+    }
+
+    .menu a:hover {
+      transform: translateY(-5px);
+    }
+
+    .menu img {
+      width: 150px;
+      height: auto;
+      border: 3px solid #fff;
+      border-radius: 10px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .menu img:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Estilos para móvil */
+    @media (max-width: 768px) {
+      .menu {
+        width: 100%;
+        height: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .menu h1 {
+        font-size: 2em;
+        margin-bottom: 40px;
+      }
+
+      .menu a {
+        margin: 20px 0;
+        display: block;
+      }
+
+      .menu img {
+        width: 80%;
+        max-width: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="menu">
+    <h1>AZARGAMES MENU</h1>
+    <a href="kiubi27.github.io">
+      <img src="singlespin-18.png" alt="Imagen 1">
+    </a>
+    <a href="kiubi27.github.io/DUO">
+      <img src="duowheel-3.png" alt="Imagen 2">
+    </a>
+    <a href="kiubi27.github.io/MONTONES">
+      <img src="reves.jpg" alt="Imagen 3">
+    </a>
+  </div>
+</body>
+</html>
