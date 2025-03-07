@@ -44,7 +44,47 @@
         margin-bottom: 15px;
         text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
       }
+      .duo-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #1b1602;
+      color: rgb(255, 196, 0);
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      z-index: 5;
+    }
 
+    .duo-button:hover {
+      background-color: #1f1201;
+      transform: scale(1.15);
+    }
+
+    .duo-button::before {
+      content: '➜'; /* Flecha más grande apuntando a la derecha */
+      font-size: 24px;
+      margin-right: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .duo-button {
+        top: 5px;
+        right: 5px;
+        padding: 12px 25px;
+        font-size: 18px;
+      }
+      .duo-button::before {
+        font-size: 22px;
+        margin-right: 10px;
+      }
+    }
       .montones {
         display: none;
         justify-content: center;
@@ -64,20 +104,53 @@
       .monton {
         width: clamp(120px, 25vw, 165px);
         height: clamp(192px, 40vw, 265px);
-        background-size: cover;
-        background-position: center;
-        border-radius: 10px;
+        position: relative;
+        perspective: 1000px;
         cursor: pointer;
-        transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
-        background-image: url("baraja_html/reves.jpg");
+        border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         border: 2px solid transparent;
+        transition: box-shadow 0.3s, border 0.3s;
       }
 
-      .monton:hover {
-        transform: scale(1.1);
+      .card-inner {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+      }
+
+      .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 10px;
+        background-size: cover;
+        background-position: center;
+      }
+
+      .card-face.front {
+        transform: rotateY(180deg);
+      }
+
+      .card-face.back {
+        background-image: url("baraja_html/reves.jpg");
+      }
+
+      .monton.flip .card-inner {
+        transform: rotateY(-180deg);
+      }
+
+      .monton:hover:not(.disabled) {
         box-shadow: 0 8px 16px rgba(255, 255, 255, 0.3);
         border: 2px solid #ffd700;
+      }
+
+      .disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
       }
 
       .resultado {
@@ -95,43 +168,48 @@
       .resultado.active {
         display: block;
       }
-
+      .button-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Espacio entre botones en la misma fila */
+  margin: 10px 0; /* Espacio vertical entre filas */
+}
       button {
-        padding: clamp(10px, 2.5vw, 12px) clamp(20px, 4vw, 25px);
-        font-size: clamp(1rem, 3vw, 1.1rem);
-        margin: 8px;
-        cursor: pointer;
-        border: none;
-        border-radius: 6px;
-        background: linear-gradient(45deg, #ff9800, #e68900);
-        color: #fff;
-        transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        width: clamp(150px, 40vw, 200px);
-      }
+  padding: clamp(10px, 2.5vw, 12px) clamp(20px, 4vw, 25px);
+  font-size: clamp(1rem, 3vw, 1.1rem);
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(45deg, #ff9800, #e68900);
+  color: #fff;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  width: clamp(150px, 40vw, 200px); /* Mantener un ancho consistente */
+}
 
-      button:hover {
-        background: linear-gradient(45deg, #e68900, #ff9800);
-        transform: translateY(-3px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-      }
-
-      @keyframes flipCard {
-        0% { transform: rotateY(0deg); }
-        50% { transform: rotateY(90deg); }
-        100% { transform: rotateY(180deg); }
-      }
-
-      .monton.flip {
-        animation: flipCard 0.4s linear forwards;
-        transform: rotateY(180deg);
-      }
-
+button:hover {
+  background: linear-gradient(45deg, #e68900, #ff9800);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+@media (max-width: 768px) {
+  .button-row {
+    gap: 15px;
+  }
+}
+@media (max-width: 430px) {
+  .button-row {
+    flex-direction: column; /* En pantallas muy pequeñas, volver a vertical */
+    gap: 10px;
+  }
+}
+button {
+    width: clamp(140px, 45vw, 180px);
+  }
       .monton.selected {
         box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8);
-        transform: scale(1.05);
       }
 
       @keyframes shake {
@@ -156,7 +234,11 @@
         transform: scale(1);
       }
 
-      /* Media Queries para iPhone y móviles */
+      .turno-activo {
+        color: #ffd700;
+        font-weight: bold;
+      }
+
       @media (max-width: 768px) {
         .container {
           padding: 15px;
@@ -173,9 +255,9 @@
         }
       }
 
-      @media (max-width: 430px) { /* Ajustado para iPhone 14 y similares */
+      @media (max-width: 430px) {
         body {
-          align-items: flex-start; /* Evita que el contenido se centre verticalmente en pantallas pequeñas */
+          align-items: flex-start;
           padding-top: 20px;
         }
 
@@ -197,14 +279,11 @@
           height: clamp(144px, 48vw, 192px);
         }
 
-        @media (max-width: 768px) {
-  .resultado {
-    font-size: 0.9em; /* Reducir tamaño de fuente */
-    padding: 8px; /* Reducir padding */
-    max-width: 80%; /* Ajustar el ancho */
-  }
-}
-
+        .resultado {
+          font-size: 0.9em;
+          padding: 8px;
+          max-width: 80%;
+        }
 
         button {
           padding: clamp(10px, 3vw, 12px) clamp(15px, 5vw, 20px);
@@ -217,13 +296,19 @@
   <body>
     <div class="container">
       <h1>Juego de Cartas Españolas</h1>
-      <p>Selecciona el número de montones:</p>
-      <button onclick="iniciarJuego(2)">2 Montones</button>
-      <button onclick="iniciarJuego(4)">4 Montones</button>
+      <p>Selecciona el número de montones y modo de juego:</p>
+      <div class="button-row">
+        <button onclick="iniciarJuego(2, 'single')">2 Montones (vs IA)</button>
+        <button onclick="iniciarJuego(4, 'single')">4 Montones (vs IA)</button>
+      </div>
+      <div class="button-row">
+        <button onclick="iniciarJuego(2, 'multiplayer')">2 Montones (2 Jugadores)</button>
+        <button onclick="iniciarJuego(4, 'multiplayer')">4 Montones (2 Jugadores)</button>
+      </div>
       <div class="montones" id="montones"></div>
       <div class="resultado" id="resultado"></div>
     </div>
-
+    <a href="/menu" class="duo-button">MENU</a>
     <audio id="cardSelectSound" src="card-select.mp3"></audio>
     <audio id="winSound" src="win.mp3"></audio>
     <audio id="loseSound" src="lose.mp3"></audio>
@@ -238,25 +323,23 @@
 
       let montones = [];
       let cartasMostradas = [];
-      let puntuacionJugador = 0;
-      let puntuacionEnemigo = 0;
-      let turnoJugador = true;
+      let playerScores = [0, 0]; // [Jugador 1/Humano, Jugador 2/Enemigo]
+      let currentPlayerIndex = 0; // 0 para Jugador 1/Humano, 1 para Jugador 2/Enemigo
       let numMontonesInicial = 0;
       let cartasSeleccionadas = [];
-      let ultimaCartaJugador = "";
-      let ultimaCartaEnemigo = "";
+      let ultimaCarta = ["", ""]; // [Jugador 1/Humano, Jugador 2/Enemigo]
+      let gameMode = "single"; // "single" para un jugador, "multiplayer" para dos jugadores
       const cardSelectSound = document.getElementById("cardSelectSound");
 
-      function iniciarJuego(numMontones) {
+      function iniciarJuego(numMontones, mode = "single") {
         montones = [];
         cartasMostradas = new Array(numMontones).fill(false);
-        puntuacionJugador = 0;
-        puntuacionEnemigo = 0;
-        turnoJugador = true;
+        playerScores = [0, 0];
+        currentPlayerIndex = 0;
         numMontonesInicial = numMontones;
         cartasSeleccionadas = [];
-        ultimaCartaJugador = "";
-        ultimaCartaEnemigo = "";
+        ultimaCarta = ["", ""];
+        gameMode = mode;
         document.getElementById("resultado").innerHTML = "";
 
         document.getElementById("montones").classList.add("active");
@@ -267,23 +350,39 @@
           montones.push(barajaMezclada.pop());
         }
         mostrarMontones();
+        actualizarResultado();
       }
 
       function mostrarMontones() {
-        const montonesDiv = document.getElementById("montones");
-        montonesDiv.innerHTML = "";
-        montones.forEach((carta, index) => {
-          const montonDiv = document.createElement("div");
-          montonDiv.className = "monton";
-          if (cartasMostradas[index]) {
-            montonDiv.style.backgroundImage = `url('baraja_html/${carta}.jpg')`;
-            montonDiv.onclick = null;
-          } else {
-            montonDiv.onclick = () => revelarCarta(index, montonDiv);
-          }
-          montonesDiv.appendChild(montonDiv);
-        });
-      }
+  const montonesDiv = document.getElementById("montones");
+  montonesDiv.innerHTML = "";
+  montones.forEach((carta, index) => {
+    const montonDiv = document.createElement("div"); // Corrección: Eliminé el "/I" y corregí la sintaxis
+    montonDiv.className = "monton";
+
+    const cardInner = document.createElement("div");
+    cardInner.className = "card-inner";
+
+    const cardBack = document.createElement("div");
+    cardBack.className = "card-face back";
+
+    const cardFront = document.createElement("div");
+    cardFront.className = "card-face front";
+    cardFront.style.backgroundImage = `url('baraja_html/${carta}.jpg')`;
+
+    cardInner.appendChild(cardBack);
+    cardInner.appendChild(cardFront);
+    montonDiv.appendChild(cardInner);
+
+    if (cartasMostradas[index]) {
+      cardInner.style.transform = "rotateY(-180deg)";
+      montonDiv.onclick = null;
+    } else {
+      montonDiv.onclick = () => revelarCarta(index, montonDiv);
+    }
+    montonesDiv.appendChild(montonDiv);
+  });
+}
 
       function playSound() {
         cardSelectSound.playbackRate = 1.8;
@@ -292,60 +391,53 @@
       }
 
       function revelarCarta(index, montonDiv) {
-        if (!turnoJugador) return;
-
         if (cartasMostradas[index]) {
           montonDiv.classList.add("shake");
           setTimeout(() => montonDiv.classList.remove("shake"), 300);
           return;
         }
 
-        cartasMostradas[index] = true;
-        montonDiv.classList.add("flip", "selected");
-
-        setTimeout(() => {
-          montonDiv.style.backgroundImage = `url('baraja_html/${montones[index]}.jpg')`;
-        }, 200);
-
-        setTimeout(() => {
-          montonDiv.classList.remove("selected");
-        }, 500);
-
-        playSound();
-        seleccionarCarta(index);
-        
-        setTimeout(() => {
-          montonDiv.classList.remove("flip");
-        }, 500);
-      }
-
-      function seleccionarCarta(index) {
-        if (!turnoJugador) return;
-
-        const cartaSeleccionada = montones[index];
-        cartasSeleccionadas.push(cartaSeleccionada);
-        ultimaCartaJugador = formatCarta(cartaSeleccionada);
-        puntuacionJugador += obtenerPuntos(cartaSeleccionada);
-
-        if (numMontonesInicial === 4 && cartasSeleccionadas.length > 1) {
-          document.getElementById("resultado").innerHTML = `
-            <strong>Jugador:</strong> ${ultimaCartaJugador} (${puntuacionJugador} puntos)<br>
-            <strong>Enemigo:</strong> ${ultimaCartaEnemigo ? ultimaCartaEnemigo + " (" + puntuacionEnemigo + " puntos)" : "Esperando..."}
-          `;
-        } else {
-          document.getElementById("resultado").innerHTML = `
-            <strong>Jugador:</strong> ${ultimaCartaJugador} (${puntuacionJugador} puntos)<br>
-            <strong>Enemigo:</strong> Esperando...
-          `;
+        if (gameMode === "multiplayer" && montonDiv.classList.contains("disabled")) {
+          montonDiv.classList.add("shake");
+          setTimeout(() => montonDiv.classList.remove("shake"), 300);
+          return;
         }
 
         cartasMostradas[index] = true;
+        montonDiv.classList.add("flip");
+
+        setTimeout(() => {
+          montonDiv.classList.add("selected");
+        }, 300);
+
+        setTimeout(() => {
+          montonDiv.classList.remove("selected");
+          montonDiv.classList.remove("flip");
+          montonDiv.querySelector(".card-inner").style.transform = "rotateY(-180deg)";
+          playSound();
+          seleccionarCarta(index);
+        }, 600);
+      }
+
+      function seleccionarCarta(index) {
+        const cartaSeleccionada = montones[index];
+        cartasSeleccionadas.push(cartaSeleccionada);
+        ultimaCarta[currentPlayerIndex] = formatCarta(cartaSeleccionada);
+        playerScores[currentPlayerIndex] += obtenerPuntos(cartaSeleccionada);
+
+        actualizarResultado();
 
         if (cartasSeleccionadas.length === numMontonesInicial) {
           mostrarResultadoFinal();
         } else {
-          turnoJugador = false;
-          setTimeout(turnoEnemigo, 1000);
+          if (gameMode === "single") {
+            currentPlayerIndex = 1; // Turno del enemigo (IA)
+            setTimeout(turnoEnemigo, 1000);
+          } else {
+            currentPlayerIndex = 1 - currentPlayerIndex; // Cambiar turno entre Jugador 1 y Jugador 2
+            mostrarMontones(); // Actualizar montones para reflejar el turno
+            actualizarResultado();
+          }
         }
       }
 
@@ -361,52 +453,79 @@
 
         const index = indicesDisponibles[Math.floor(Math.random() * indicesDisponibles.length)];
         const montonDiv = document.getElementsByClassName("monton")[index];
-        
+
         cartasMostradas[index] = true;
-        montonDiv.classList.add("flip", "selected");
+        montonDiv.classList.add("flip");
 
         setTimeout(() => {
-          montonDiv.style.backgroundImage = `url('baraja_html/${montones[index]}.jpg')`;
-        }, 200);
+          montonDiv.classList.add("selected");
+        }, 300);
 
         setTimeout(() => {
           montonDiv.classList.remove("selected");
           montonDiv.classList.remove("flip");
-        }, 500);
+          montonDiv.querySelector(".card-inner").style.transform = "rotateY(-180deg)";
+          playSound();
+          const cartaEnemigo = montones[index];
+          cartasSeleccionadas.push(cartaEnemigo);
+          ultimaCarta[1] = formatCarta(cartaEnemigo);
+          playerScores[1] += obtenerPuntos(cartaEnemigo);
 
-        playSound();
+          actualizarResultado();
 
-        const cartaEnemigo = montones[index];
-        cartasSeleccionadas.push(cartaEnemigo);
-        ultimaCartaEnemigo = formatCarta(cartaEnemigo);
-        puntuacionEnemigo += obtenerPuntos(cartaEnemigo);
+          if (cartasSeleccionadas.length === numMontonesInicial) {
+            mostrarResultadoFinal();
+          } else {
+            currentPlayerIndex = 0; // Volver al jugador humano
+            mostrarMontones();
+          }
+        }, 600);
+      }
 
-        document.getElementById("resultado").innerHTML = `
-          <strong>Jugador:</strong> ${ultimaCartaJugador} (${puntuacionJugador} puntos)<br>
-          <strong>Enemigo:</strong> ${ultimaCartaEnemigo} (${puntuacionEnemigo} puntos)
-        `;
-
-        if (cartasSeleccionadas.length === numMontonesInicial) {
-          mostrarResultadoFinal();
+      function actualizarResultado() {
+        const resultadoDiv = document.getElementById("resultado");
+        if (gameMode === "single") {
+          resultadoDiv.innerHTML = `
+            <strong ${currentPlayerIndex === 0 ? 'class="turno-activo"' : ''}>Jugador:</strong> ${ultimaCarta[0] || "Esperando..."} (${playerScores[0]} puntos)<br>
+            <strong ${currentPlayerIndex === 1 ? 'class="turno-activo"' : ''}>Enemigo:</strong> ${ultimaCarta[1] || "Esperando..."} (${playerScores[1]} puntos)
+          `;
         } else {
-          turnoJugador = true;
+          resultadoDiv.innerHTML = `
+            <strong ${currentPlayerIndex === 0 ? 'class="turno-activo"' : ''}>Jugador 1:</strong> ${ultimaCarta[0] || "Esperando..."} (${playerScores[0]} puntos) ${currentPlayerIndex === 0 ? "(Tu turno)" : ""}<br>
+            <strong ${currentPlayerIndex === 1 ? 'class="turno-activo"' : ''}>Jugador 2:</strong> ${ultimaCarta[1] || "Esperando..."} (${playerScores[1]} puntos) ${currentPlayerIndex === 1 ? "(Tu turno)" : ""}
+          `;
         }
       }
 
       function mostrarResultadoFinal() {
         const winSound = document.getElementById("winSound");
         const loseSound = document.getElementById("loseSound");
+        let resultadoFinal = "";
 
-        let resultadoFinal = `<br><strong>Puntos Jugador:</strong> ${puntuacionJugador} - <strong>Puntos Enemigo:</strong> ${puntuacionEnemigo}<br>`;
-        if (puntuacionEnemigo > puntuacionJugador) {
-          resultadoFinal += "💀 ¡El enemigo gana!";
-          loseSound.play().catch((error) => console.log("Error al reproducir sonido de derrota:", error));
-        } else if (puntuacionJugador > puntuacionEnemigo) {
-          resultadoFinal += "🎉 ¡Tú ganas!";
-          winSound.play().catch((error) => console.log("Error al reproducir sonido de victoria:", error));
+        if (gameMode === "single") {
+          resultadoFinal = `<br><strong>Puntos Jugador:</strong> ${playerScores[0]} - <strong>Puntos Enemigo:</strong> ${playerScores[1]}<br>`;
+          if (playerScores[1] > playerScores[0]) {
+            resultadoFinal += "💀 ¡El enemigo gana!";
+            loseSound.play().catch((error) => console.log("Error al reproducir sonido de derrota:", error));
+          } else if (playerScores[0] > playerScores[1]) {
+            resultadoFinal += "🎉 ¡Tú ganas!";
+            winSound.play().catch((error) => console.log("Error al reproducir sonido de victoria:", error));
+          } else {
+            resultadoFinal += "🤝 ¡Empate!";
+          }
         } else {
-          resultadoFinal += "🤝 ¡Empate!";
+          resultadoFinal = `<br><strong>Puntos Jugador 1:</strong> ${playerScores[0]} - <strong>Puntos Jugador 2:</strong> ${playerScores[1]}<br>`;
+          if (playerScores[1] > playerScores[0]) {
+            resultadoFinal += "🏆 ¡Jugador 2 gana!";
+            winSound.play().catch((error) => console.log("Error al reproducir sonido de victoria:", error));
+          } else if (playerScores[0] > playerScores[1]) {
+            resultadoFinal += "🏆 ¡Jugador 1 gana!";
+            winSound.play().catch((error) => console.log("Error al reproducir sonido de victoria:", error));
+          } else {
+            resultadoFinal += "🤝 ¡Empate!";
+          }
         }
+
         document.getElementById("resultado").innerHTML += `<br><strong>${resultadoFinal}</strong>`;
 
         document.querySelectorAll(".monton").forEach((carta) => {
