@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Juego de Cartas Españolas</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: url("tapete.jpg") center center / cover no-repeat fixed;
+        color: #fff;
+        text-align: center;
+        padding: 0;
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: auto;
+      }
+
+      .container {
+        padding: 15px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        max-width: 1200px;
+        box-sizing: border-box;
+      }
+
+      h1 {
+        font-size: clamp(1.8rem, 6vw, 2.5rem);
+        margin-bottom: 15px;
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+        color: #ffd700;
+      }
+
+      p {
+        font-size: clamp(1rem, 3.5vw, 1.2rem);
+        margin-bottom: 15px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+      }
+
+      .montones {
+        display: none;
+        justify-content: center;
+        gap: clamp(12px, 3vw, 15px);
+        flex-wrap: wrap;
+        margin: 20px 0;
+        padding: 15px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2);
+      }
+
+      .montones.active {
+        display: flex;
+      }
+
+      .monton {
+        width: clamp(120px, 25vw, 165px);
+        height: clamp(192px, 40vw, 265px);
+        background-size: cover;
+        background-position: center;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+        background-image: url("baraja_html/reves.jpg");
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        border: 2px solid transparent;
+      }
+
+      .monton:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 16px rgba(255, 255, 255, 0.3);
+        border: 2px solid #ffd700;
+      }
+
+      .resultado {
+        display: none;
+        margin-top: 15px;
+        font-size: clamp(1rem, 3.5vw, 1.2rem);
+        line-height: 1.5;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+        max-width: 90%;
+      }
+
+      .resultado.active {
+        display: block;
+      }
+
+      button {
+        padding: clamp(10px, 2.5vw, 12px) clamp(20px, 4vw, 25px);
+        font-size: clamp(1rem, 3vw, 1.1rem);
+        margin: 8px;
+        cursor: pointer;
+        border: none;
+        border-radius: 6px;
+        background: linear-gradient(45deg, #ff9800, #e68900);
+        color: #fff;
+        transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        width: clamp(150px, 40vw, 200px);
+      }
+
+      button:hover {
+        background: linear-gradient(45deg, #e68900, #ff9800);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+      }
+
+      @keyframes flipCard {
+        0% { transform: rotateY(0deg); }
+        50% { transform: rotateY(90deg); }
+        100% { transform: rotateY(180deg); }
+      }
+
+      .monton.flip {
+        animation: flipCard 0.4s linear forwards;
+        transform: rotateY(180deg);
+      }
+
+      .monton.selected {
+        box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8);
+        transform: scale(1.05);
+      }
+
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+      }
+
+      .monton.shake {
+        animation: shake 0.3s ease-in-out;
+      }
+
+      .resultado {
+        opacity: 0;
+        transform: scale(0.8);
+        transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+      }
+
+      .resultado.active {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* Media Queries para iPhone y móviles */
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        .montones {
+          gap: 12px;
+          padding: 12px;
+        }
+
+        .monton {
+          width: clamp(100px, 28vw, 140px);
+          height: clamp(160px, 45vw, 224px);
+        }
+      }
+
+      @media (max-width: 430px) { /* Ajustado para iPhone 14 y similares */
+        body {
+          align-items: flex-start; /* Evita que el contenido se centre verticalmente en pantallas pequeñas */
+          padding-top: 20px;
+        }
+
+        h1 {
+          font-size: clamp(1.5rem, 7vw, 2rem);
+        }
+
+        p {
+          font-size: clamp(0.9rem, 4vw, 1rem);
+        }
+
+        .montones {
+          gap: 10px;
+          padding: 10px;
+        }
+
+        .monton {
+          width: clamp(90px, 30vw, 120px);
+          height: clamp(144px, 48vw, 192px);
+        }
+
+        @media (max-width: 768px) {
+  .resultado {
+    font-size: 0.9em; /* Reducir tamaño de fuente */
+    padding: 8px; /* Reducir padding */
+    max-width: 80%; /* Ajustar el ancho */
+  }
+}
+
+
+        button {
+          padding: clamp(10px, 3vw, 12px) clamp(15px, 5vw, 20px);
+          font-size: clamp(0.9rem, 4vw, 1rem);
+          width: clamp(140px, 45vw, 180px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Juego de Cartas Españolas</h1>
+      <p>Selecciona el número de montones:</p>
+      <button onclick="iniciarJuego(2)">2 Montones</button>
+      <button onclick="iniciarJuego(4)">4 Montones</button>
+      <div class="montones" id="montones"></div>
+      <div class="resultado" id="resultado"></div>
+    </div>
+
+    <audio id="cardSelectSound" src="card-select.mp3"></audio>
+    <audio id="winSound" src="win.mp3"></audio>
+    <audio id="loseSound" src="lose.mp3"></audio>
+
+    <script>
+      const baraja = [
+        "oros1", "oros2", "oros3", "oros4", "oros5", "oros6", "oros7", "oros10", "oros11", "oros12",
+        "copas1", "copas2", "copas3", "copas4", "copas5", "copas6", "copas7", "copas10", "copas11", "copas12",
+        "espadas1", "espadas2", "espadas3", "espadas4", "espadas5", "espadas6", "espadas7", "espadas10", "espadas11", "espadas12",
+        "bastos1", "bastos2", "bastos3", "bastos4", "bastos5", "bastos6", "bastos7", "bastos10", "bastos11", "bastos12",
+      ];
+
+      let montones = [];
+      let cartasMostradas = [];
+      let puntuacionJugador = 0;
+      let puntuacionEnemigo = 0;
+      let turnoJugador = true;
+      let numMontonesInicial = 0;
+      let cartasSeleccionadas = [];
+      let ultimaCartaJugador = "";
+      let ultimaCartaEnemigo = "";
+      const cardSelectSound = document.getElementById("cardSelectSound");
+
+      function iniciarJuego(numMontones) {
+        montones = [];
+        cartasMostradas = new Array(numMontones).fill(false);
+        puntuacionJugador = 0;
+        puntuacionEnemigo = 0;
+        turnoJugador = true;
+        numMontonesInicial = numMontones;
+        cartasSeleccionadas = [];
+        ultimaCartaJugador = "";
+        ultimaCartaEnemigo = "";
+        document.getElementById("resultado").innerHTML = "";
+
+        document.getElementById("montones").classList.add("active");
+        document.getElementById("resultado").classList.add("active");
+
+        let barajaMezclada = [...baraja].sort(() => Math.random() - 0.5);
+        for (let i = 0; i < numMontones; i++) {
+          montones.push(barajaMezclada.pop());
+        }
+        mostrarMontones();
+      }
+
+      function mostrarMontones() {
+        const montonesDiv = document.getElementById("montones");
+        montonesDiv.innerHTML = "";
+        montones.forEach((carta, index) => {
+          const montonDiv = document.createElement("div");
+          montonDiv.className = "monton";
+          if (cartasMostradas[index]) {
+            montonDiv.style.backgroundImage = `url('baraja_html/${carta}.jpg')`;
+            montonDiv.onclick = null;
+          } else {
+            montonDiv.onclick = () => revelarCarta(index, montonDiv);
+          }
+          montonesDiv.appendChild(montonDiv);
+        });
+      }
+
+      function playSound() {
+        cardSelectSound.playbackRate = 1.8;
+        cardSelectSound.currentTime = 0;
+        cardSelectSound.play().catch((error) => console.log("Error al reproducir el sonido:", error));
+      }
+
+      function revelarCarta(index, montonDiv) {
+        if (!turnoJugador) return;
+
+        if (cartasMostradas[index]) {
+          montonDiv.classList.add("shake");
+          setTimeout(() => montonDiv.classList.remove("shake"), 300);
+          return;
+        }
+
+        cartasMostradas[index] = true;
+        montonDiv.classList.add("flip", "selected");
+
+        setTimeout(() => {
+          montonDiv.style.backgroundImage = `url('baraja_html/${montones[index]}.jpg')`;
+        }, 200);
+
+        setTimeout(() => {
+          montonDiv.classList.remove("selected");
+        }, 500);
+
+        playSound();
+        seleccionarCarta(index);
+        
+        setTimeout(() => {
+          montonDiv.classList.remove("flip");
+        }, 500);
+      }
+
+      function seleccionarCarta(index) {
+        if (!turnoJugador) return;
+
+        const cartaSeleccionada = montones[index];
+        cartasSeleccionadas.push(cartaSeleccionada);
+        ultimaCartaJugador = formatCarta(cartaSeleccionada);
+        puntuacionJugador += obtenerPuntos(cartaSeleccionada);
+
+        if (numMontonesInicial === 4 && cartasSeleccionadas.length > 1) {
+          document.getElementById("resultado").innerHTML = `
+            <strong>Jugador:</strong> ${ultimaCartaJugador} (${puntuacionJugador} puntos)<br>
+            <strong>Enemigo:</strong> ${ultimaCartaEnemigo ? ultimaCartaEnemigo + " (" + puntuacionEnemigo + " puntos)" : "Esperando..."}
+          `;
+        } else {
+          document.getElementById("resultado").innerHTML = `
+            <strong>Jugador:</strong> ${ultimaCartaJugador} (${puntuacionJugador} puntos)<br>
+            <strong>Enemigo:</strong> Esperando...
+          `;
+        }
+
+        cartasMostradas[index] = true;
+
+        if (cartasSeleccionadas.length === numMontonesInicial) {
+          mostrarResultadoFinal();
+        } else {
+          turnoJugador = false;
+          setTimeout(turnoEnemigo, 1000);
+        }
+      }
+
+      function turnoEnemigo() {
+        const indicesDisponibles = montones
+          .map((_, index) => index)
+          .filter(index => !cartasMostradas[index]);
+
+        if (indicesDisponibles.length === 0) {
+          mostrarResultadoFinal();
+          return;
+        }
+
+        const index = indicesDisponibles[Math.floor(Math.random() * indicesDisponibles.length)];
+        const montonDiv = document.getElementsByClassName("monton")[index];
+        
+        cartasMostradas[index] = true;
+        montonDiv.classList.add("flip", "selected");
+
+        setTimeout(() => {
+          montonDiv.style.backgroundImage = `url('baraja_html/${montones[index]}.jpg')`;
+        }, 200);
+
+        setTimeout(() => {
+          montonDiv.classList.remove("selected");
+          montonDiv.classList.remove("flip");
+        }, 500);
+
+        playSound();
+
+        const cartaEnemigo = montones[index];
+        cartasSeleccionadas.push(cartaEnemigo);
+        ultimaCartaEnemigo = formatCarta(cartaEnemigo);
+        puntuacionEnemigo += obtenerPuntos(cartaEnemigo);
+
+        document.getElementById("resultado").innerHTML = `
+          <strong>Jugador:</strong> ${ultimaCartaJugador} (${puntuacionJugador} puntos)<br>
+          <strong>Enemigo:</strong> ${ultimaCartaEnemigo} (${puntuacionEnemigo} puntos)
+        `;
+
+        if (cartasSeleccionadas.length === numMontonesInicial) {
+          mostrarResultadoFinal();
+        } else {
+          turnoJugador = true;
+        }
+      }
+
+      function mostrarResultadoFinal() {
+        const winSound = document.getElementById("winSound");
+        const loseSound = document.getElementById("loseSound");
+
+        let resultadoFinal = `<br><strong>Puntos Jugador:</strong> ${puntuacionJugador} - <strong>Puntos Enemigo:</strong> ${puntuacionEnemigo}<br>`;
+        if (puntuacionEnemigo > puntuacionJugador) {
+          resultadoFinal += "💀 ¡El enemigo gana!";
+          loseSound.play().catch((error) => console.log("Error al reproducir sonido de derrota:", error));
+        } else if (puntuacionJugador > puntuacionEnemigo) {
+          resultadoFinal += "🎉 ¡Tú ganas!";
+          winSound.play().catch((error) => console.log("Error al reproducir sonido de victoria:", error));
+        } else {
+          resultadoFinal += "🤝 ¡Empate!";
+        }
+        document.getElementById("resultado").innerHTML += `<br><strong>${resultadoFinal}</strong>`;
+
+        document.querySelectorAll(".monton").forEach((carta) => {
+          carta.onclick = function () {
+            carta.classList.add("shake");
+            setTimeout(() => carta.classList.remove("shake"), 300);
+          };
+        });
+      }
+
+      function obtenerPuntos(carta) {
+        const numero = parseInt(carta.match(/\d+$/)[0]);
+        return numero;
+      }
+
+      function formatCarta(carta) {
+        const match = carta.match(/^([a-z]+)(\d+)$/);
+        if (match) {
+          const palo = match[1];
+          const numero = match[2];
+          return `${palo.charAt(0).toUpperCase() + palo.slice(1)} ${numero}`;
+        }
+        return carta;
+      }
+    </script>
+  </body>
+</html>
