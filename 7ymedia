@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siete y Media - Baraja Española</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: url("tapete.jpg") center center / cover no-repeat fixed;
+            color: #fff;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: auto;
+        }
+        .menu-button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background-color: #1b1602;
+            color: rgb(255, 196, 0);
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            z-index: 10;
+        }
+        .menu-button:hover {
+            background-color: #1f1201;
+            transform: scale(1.15);
+        }
+        .menu-button::before {
+            content: '➜'; /* Ícono de menú */
+            font-size: 24px;
+            margin-right: 12px;
+        }
+        @media (max-width: 768px) {
+            .menu-button {
+                right: 5px;
+                padding: 12px 25px;
+                font-size: 18px;
+            }
+            .menu-button::before {
+                font-size: 22px;
+                margin-right: 10px;
+            }
+        }
+        .container {
+            padding: 15px; /* Reducido de 20px */
+            border-radius: 12px; /* Reducido de 15px */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 800px; /* Reducido de 1000px */
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5); /* Sombra más pequeña */
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 2.5rem); /* Reducido de 2rem-3rem */
+            margin-bottom: 15px; /* Reducido de 20px */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            color: #ffd700;
+        }
+
+        #controles {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Reducido de 15px */
+            flex-wrap: wrap;
+            margin: 15px 0; /* Reducido de 20px */
+        }
+
+        button {
+            padding: clamp(8px, 2vw, 10px) clamp(15px, 3.5vw, 20px); /* Reducido */
+            font-size: clamp(0.9rem, 2.5vw, 1rem); /* Reducido */
+            cursor: pointer;
+            border: none;
+            border-radius: 6px; /* Reducido de 8px */
+            background: linear-gradient(45deg, #ff9800, #e68900);
+            color: #fff;
+            transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3); /* Sombra más pequeña */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: clamp(120px, 35vw, 150px); /* Reducido de 150px-180px */
+        }
+
+        button:hover:not(:disabled) {
+            background: linear-gradient(45deg, #e68900, #ff9800);
+            transform: translateY(-2px); /* Reducido de -3px */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+        }
+
+        #reglas-btn {
+            background: linear-gradient(45deg, #4682b4, #326291);
+        }
+
+        #reglas-btn:hover:not(:disabled) {
+            background: linear-gradient(45deg, #326291, #4682b4);
+        }
+
+        #instrucciones {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px; /* Reducido de 20px */
+            border-radius: 8px; /* Reducido de 10px */
+            margin: 15px 0; /* Reducido de 20px */
+            text-align: left;
+            display: none;
+            max-width: 90%;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4); /* Sombra más pequeña */
+        }
+
+        #instrucciones h2 {
+            color: #ffd700;
+            margin-bottom: 10px; /* Reducido de 15px */
+            font-size: 1.2rem; /* Tamaño fijo más pequeño */
+        }
+
+        #instrucciones ul {
+            padding-left: 15px; /* Reducido de 20px */
+        }
+
+        #instrucciones li {
+            margin-bottom: 8px; /* Reducido de 10px */
+            font-size: 0.9rem; /* Tamaño fijo más pequeño */
+        }
+
+        #mesa {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 15px; /* Reducido de 20px */
+            width: 100%;
+        }
+
+        .jugador-info, .banca-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px; /* Reducido de 20px */
+            border-radius: 10px; /* Reducido de 12px */
+            margin: 10px 0; /* Reducido de 15px */
+            width: 100%;
+            max-width: 500px; /* Reducido de 700px */
+            box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.2); /* Sombra más pequeña */
+        }
+
+        .jugador-info h2, .banca-info h2 {
+            color: #ffd700;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Sombra más pequeña */
+            margin-bottom: 10px; /* Reducido de 15px */
+            font-size: 1.2rem; /* Tamaño fijo más pequeño */
+        }
+
+        .cartas-contenedor {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px; /* Reducido de 10px */
+            min-height: 100px; /* Reducido de 150px */
+        }
+
+        .carta {
+            width: clamp(60px, 12vw, 80px); /* Reducido de 80px-100px */
+            height: clamp(90px, 18vw, 120px); /* Reducido de 120px-150px */
+            margin: 3px; /* Reducido de 5px */
+            border-radius: 6px; /* Reducido de 8px */
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Sombra más pequeña */
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .carta img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .carta .cara-trasera {
+            opacity: 1;
+        }
+
+        .carta .cara-delantera {
+            opacity: 0;
+        }
+
+        .carta:hover .cara-trasera {
+            opacity: 0;
+        }
+
+        .carta:hover .cara-delantera {
+            opacity: 1;
+        }
+
+        .carta:hover {
+            transform: scale(1.05);
+        }
+
+        .puntuacion {
+            font-weight: bold;
+            font-size: clamp(0.9rem, 3vw, 1rem); /* Reducido */
+            margin: 8px 0; /* Reducido de 10px */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Sombra más pequeña */
+        }
+
+        .resultado {
+            display: none;
+            margin-top: 15px; /* Reducido de 20px */
+            font-size: clamp(1rem, 3.5vw, 1.2rem); /* Reducido */
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px; /* Reducido de 15px */
+            border-radius: 8px; /* Reducido de 10px */
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.2); /* Sombra más pequeña */
+            max-width: 90%;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+
+        .resultado.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Optimización para iPhone y pantallas pequeñas */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                max-width: 600px;
+            }
+
+            #controles {
+                gap: 8px;
+            }
+
+            button {
+                width: clamp(100px, 30vw, 130px);
+                padding: clamp(6px, 1.5vw, 8px) clamp(12px, 3vw, 15px);
+                font-size: clamp(0.8rem, 2vw, 0.9rem);
+            }
+
+            .carta {
+                width: clamp(50px, 11vw, 70px);
+                height: clamp(75px, 16.5vw, 105px);
+            }
+
+            .jugador-info, .banca-info {
+                max-width: 400px;
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 430px) { /* Rango típico de iPhone */
+            body {
+                align-items: flex-start;
+                padding-top: 10px;
+            }
+
+            .container {
+                padding: 8px;
+                max-width: 100%; /* Ocupa todo el ancho disponible */
+                margin: 0 5px;
+            }
+
+            h1 {
+                font-size: clamp(1.2rem, 6vw, 1.8rem);
+                margin-bottom: 10px;
+            }
+
+            #controles {
+                flex-direction: column;
+                gap: 6px;
+                margin: 10px 0;
+            }
+
+            button {
+                width: clamp(90px, 45vw, 120px);
+                padding: clamp(5px, 1.5vw, 7px) clamp(10px, 3vw, 12px);
+                font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+            }
+
+            #instrucciones {
+                padding: 10px;
+                margin: 10px 0;
+            }
+
+            #instrucciones h2 {
+                font-size: 1rem;
+            }
+
+            #instrucciones li {
+                font-size: 0.8rem;
+            }
+
+            .jugador-info, .banca-info {
+                max-width: 100%;
+                padding: 10px;
+                margin: 8px 0;
+            }
+
+            .jugador-info h2, .banca-info h2 {
+                font-size: 1rem;
+            }
+
+            .cartas-contenedor {
+                gap: 6px;
+                min-height: 80px;
+            }
+
+            .carta {
+                width: clamp(45px, 14vw, 60px);
+                height: clamp(67.5px, 21vw, 90px);
+                margin: 2px;
+            }
+
+            .puntuacion {
+                font-size: clamp(0.8rem, 3vw, 0.9rem);
+                margin: 6px 0;
+            }
+
+            .resultado {
+                font-size: clamp(0.9rem, 3.5vw, 1rem);
+                padding: 8px;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Siete y Media - Baraja Española</h1>
+        <a href="/menu" class="menu-button">MENU</a>
+        <div id="controles">
+            <button id="nuevo-juego">Nueva Partida</button>
+            <button id="pedir-carta">Pedir Carta</button>
+            <button id="plantarse">Plantarse</button>
+            <button id="reglas-btn">Ver Reglas</button>
+        </div>
+
+        <div id="instrucciones">
+            <h2>Reglas del Juego</h2>
+            <p>El objetivo es conseguir 7.5 puntos, o acercarse lo máximo posible sin pasarse.</p>
+            <ul>
+                <li>Las cartas del 1 al 7 valen su valor nominal.</li>
+                <li>Las figuras (Sota, Caballo y Rey) valen 0.5 puntos cada una.</li>
+                <li>Si te pasas de 7.5 puntos, pierdes automáticamente.</li>
+                <li>Después de plantarte, la banca juega.</li>
+                <li>Gana quien se acerque más a 7.5 sin pasarse. En caso de empate, gana la banca.</li>
+            </ul>
+        </div>
+
+        <div class="resultado" id="resultado"></div>
+
+        <div id="mesa">
+            <div class="jugador-info">
+                <h2>Tus Cartas</h2>
+                <div class="puntuacion" id="puntos-jugador">Puntuación: 0</div>
+                <div class="cartas-contenedor" id="cartas-jugador"></div>
+            </div>
+
+            <div class="banca-info">
+                <h2>Cartas de la Banca</h2>
+                <div class="puntuacion" id="puntos-banca">Puntuación: ?</div>
+                <div class="cartas-contenedor" id="cartas-banca"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const nuevoJuegoBtn = document.getElementById('nuevo-juego');
+        const pedirCartaBtn = document.getElementById('pedir-carta');
+        const plantarseBtn = document.getElementById('plantarse');
+        const reglasBtn = document.getElementById('reglas-btn');
+        const instrucciones = document.getElementById('instrucciones');
+        const cartasJugador = document.getElementById('cartas-jugador');
+        const cartasBanca = document.getElementById('cartas-banca');
+        const puntosJugador = document.getElementById('puntos-jugador');
+        const puntosBanca = document.getElementById('puntos-banca');
+        const resultadoDiv = document.getElementById('resultado');
+
+        const carpetaImagenes = 'baraja_html/';
+
+        let baraja = [];
+        let cartasJugadorMano = [];
+        let cartasBancaMano = [];
+        let puntosJugadorTotal = 0;
+        let puntosBancaTotal = 0;
+        let juegoTerminado = true;
+
+        const palos = ['oros', 'copas', 'espadas', 'bastos'];
+        const valores = [1, 2, 3, 4, 5, 6, 7, 10, 11, 12];
+
+        nuevoJuegoBtn.addEventListener('click', iniciarJuego);
+        pedirCartaBtn.addEventListener('click', pedirCarta);
+        plantarseBtn.addEventListener('click', plantarse);
+        reglasBtn.addEventListener('click', () => {
+            instrucciones.style.display = instrucciones.style.display === 'none' || instrucciones.style.display === '' ? 'block' : 'none';
+        });
+
+        desactivarBotones();
+
+        function iniciarJuego() {
+            juegoTerminado = false;
+            cartasJugadorMano = [];
+            cartasBancaMano = [];
+            puntosJugadorTotal = 0;
+            puntosBancaTotal = 0;
+
+            baraja = [];
+            for (let palo of palos) {
+                for (let valor of valores) {
+                    baraja.push({ palo, valor });
+                }
+            }
+
+            barajar(baraja);
+
+            cartasJugador.innerHTML = '';
+            cartasBanca.innerHTML = '';
+            puntosJugador.textContent = 'Puntuación: 0';
+            puntosBanca.textContent = 'Puntuación: ?';
+
+            resultadoDiv.textContent = '';
+            resultadoDiv.className = 'resultado';
+
+            const primeraCarta = baraja.pop();
+            primeraCarta.hidden = true;
+            cartasJugadorMano.push(primeraCarta);
+            mostrarCarta(primeraCarta, cartasJugador);
+            puntosJugadorTotal = calcularPuntos(cartasJugadorMano);
+            puntosJugador.textContent = `Puntuación: ${puntosJugadorTotal}`;
+
+            const cartaBanca = baraja.pop();
+            cartaBanca.hidden = true;
+            cartasBancaMano.push(cartaBanca);
+            mostrarCartaOculta(cartasBanca);
+
+            activarBotones();
+        }
+
+        function mostrarCarta(carta, contenedor) {
+            const cartaEl = document.createElement('div');
+            cartaEl.className = 'carta';
+
+            if (carta.hidden) {
+                const caraTrasera = document.createElement('img');
+                caraTrasera.src = carpetaImagenes + 'reves.jpg';
+                caraTrasera.alt = 'Carta oculta';
+                caraTrasera.className = 'cara-trasera';
+
+                const caraDelantera = document.createElement('img');
+                caraDelantera.src = carpetaImagenes + `${carta.palo}${carta.valor}.jpg`;
+                caraDelantera.alt = `${carta.palo} ${carta.valor}`;
+                caraDelantera.className = 'cara-delantera';
+                caraDelantera.onerror = function() {
+                    caraDelantera.src = '';
+                    caraDelantera.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background-color:white;color:black;">
+                        ${carta.palo}<br>${carta.valor}
+                    </div>`;
+                };
+
+                cartaEl.appendChild(caraTrasera);
+                cartaEl.appendChild(caraDelantera);
+            } else {
+                const img = document.createElement('img');
+                img.src = carpetaImagenes + `${carta.palo}${carta.valor}.jpg`;
+                img.alt = `${carta.palo} ${carta.valor}`;
+                img.onerror = function() {
+                    img.src = '';
+                    img.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background-color:white;color:black;">
+                        ${carta.palo}<br>${carta.valor}
+                    </div>`;
+                };
+                cartaEl.appendChild(img);
+            }
+
+            contenedor.appendChild(cartaEl);
+        }
+
+        function mostrarCartaOculta(contenedor) {
+            const cartaEl = document.createElement('div');
+            cartaEl.className = 'carta';
+
+            const img = document.createElement('img');
+            img.src = carpetaImagenes + 'reves.jpg';
+            img.alt = 'Carta oculta';
+
+            cartaEl.appendChild(img);
+            contenedor.appendChild(cartaEl);
+        }
+
+        function pedirCarta() {
+            if (juegoTerminado) return;
+
+            const carta = baraja.pop();
+            carta.hidden = false;
+            cartasJugadorMano.push(carta);
+            mostrarCarta(carta, cartasJugador);
+
+            puntosJugadorTotal = calcularPuntos(cartasJugadorMano);
+            puntosJugador.textContent = `Puntuación: ${puntosJugadorTotal}`;
+
+            if (puntosJugadorTotal > 7.5) {
+                finJuego('¡Te has pasado! La banca gana.');
+            }
+        }
+
+        function plantarse() {
+            if (juegoTerminado) return;
+
+            cartasJugador.innerHTML = '';
+            cartasJugadorMano.forEach(carta => {
+                mostrarCarta(carta, cartasJugador);
+            });
+
+            cartasBanca.innerHTML = '';
+            cartasBancaMano.forEach(carta => {
+                carta.hidden = false;
+                mostrarCarta(carta, cartasBanca);
+            });
+            puntosBancaTotal = calcularPuntos(cartasBancaMano);
+            puntosBanca.textContent = `Puntuación: ${puntosBancaTotal}`;
+
+            pedirCartaBtn.disabled = true;
+            plantarseBtn.disabled = true;
+
+            turnoBanca();
+        }
+
+        function turnoBanca() {
+            const pedirCartaBanca = () => {
+                const carta = baraja.pop();
+                carta.hidden = false;
+                cartasBancaMano.push(carta);
+                mostrarCarta(carta, cartasBanca);
+
+                puntosBancaTotal = calcularPuntos(cartasBancaMano);
+                puntosBanca.textContent = `Puntuación: ${puntosBancaTotal}`;
+
+                if (puntosBancaTotal < 5.5) {
+                    setTimeout(pedirCartaBanca, 800);
+                } else {
+                    determinarGanador();
+                }
+            };
+
+            if (puntosBancaTotal < 5.5) {
+                setTimeout(pedirCartaBanca, 800);
+            } else {
+                determinarGanador();
+            }
+        }
+
+        function determinarGanador() {
+            if (puntosBancaTotal > 7.5) {
+                finJuego('¡La banca se ha pasado! ¡Has ganado!');
+            } else if (puntosJugadorTotal > puntosBancaTotal) {
+                finJuego('¡Has ganado! Tienes más puntos que la banca.');
+            } else {
+                finJuego('¡La banca gana! Tiene puntos iguales o superiores a los tuyos.');
+            }
+        }
+
+        function finJuego(mensaje) {
+            juegoTerminado = true;
+            resultadoDiv.textContent = mensaje;
+            resultadoDiv.className = 'resultado active';
+            desactivarBotones();
+            nuevoJuegoBtn.disabled = false;
+        }
+
+        function calcularPuntos(mano) {
+            let puntos = 0;
+            for (let carta of mano) {
+                puntos += (carta.valor >= 10) ? 0.5 : carta.valor;
+            }
+            return puntos;
+        }
+
+        function barajar(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function activarBotones() {
+            pedirCartaBtn.disabled = false;
+            plantarseBtn.disabled = false;
+        }
+
+        function desactivarBotones() {
+            pedirCartaBtn.disabled = true;
+            plantarseBtn.disabled = true;
+        }
+    </script>
+</body>
+</html>
