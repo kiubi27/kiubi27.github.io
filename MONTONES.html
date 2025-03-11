@@ -19,7 +19,43 @@
         position: relative;
         overflow: auto;
       }
-
+      .menu-button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background-color: #1b1602;
+            color: rgb(255, 196, 0);
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            z-index: 10;
+        }
+        .menu-button:hover {
+            background-color: #1f1201;
+            transform: scale(1.15);
+        }
+        .menu-button::before {
+            content: '➜'; /* Ícono de menú */
+            font-size: 24px;
+            margin-right: 12px;
+        }
+        @media (max-width: 768px) {
+            .menu-button {
+                right: 5px;
+                padding: 12px 25px;
+                font-size: 18px;
+            }
+            .menu-button::before {
+                font-size: 22px;
+                margin-right: 10px;
+            }
+        }
       .container {
         padding: 15px;
         border-radius: 10px;
@@ -312,7 +348,7 @@ button {
     <audio id="cardSelectSound" src="card-select.mp3"></audio>
     <audio id="winSound" src="win.mp3"></audio>
     <audio id="loseSound" src="lose.mp3"></audio>
-
+    <a href="/menu" class="menu-button">MENU</a>
     <script>
       const baraja = [
         "oros1", "oros2", "oros3", "oros4", "oros5", "oros6", "oros7", "oros10", "oros11", "oros12",
